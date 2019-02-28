@@ -5,6 +5,7 @@ import random
 from sklearn.preprocessing import StandardScaler
 from sklearn import metrics
 from sklearn.metrics import accuracy_score
+import time
 
 # Reading Data
 input1Data = open('clean_real-Train.txt', 'r+')
@@ -182,26 +183,35 @@ print("Logistic Cross-Validation Error:"+str(basari.std()))
 from keras.layers import Dropout
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
+from keras.callbacks import TensorBoard
 
-result2 = result2.reshape((2777, 1, 1900))
-testResult2 = testResult2.reshape((489, 1, 1900))
+time = time.strftime("%Y_%m_%d_%H_%M_%S")
+
+kerasboard = TensorBoard(log_dir="/tmp/tensorboard/{}".format(time))
+
+#result2 = result2.reshape((2777, 1, 1900))
+#testResult2 = testResult2.reshape((489, 1, 1900))
 
 classifier = Sequential()
 
-#classifier.add(Dense(1500, init='uniform', activation='sigmoid', input_dim=1900))
-classifier.add(LSTM(1500, input_shape=(1, 1900), activation='sigmoid'))
-classifier.add(Dropout(0.50))
+classifier.add(Dense(1500, init='uniform', activation='sigmoid', input_dim=1900))
+#classifier.add(LSTM(1500, input_shape=(1, 1900), activation='sigmoid'))
+classifier.add(Dropout(0.30))
 
-classifier.add(LSTM(1500, activation='sigmoid'))
-classifier.add(Dropout(0.50))
+#classifier.add(LSTM(1500, activation='sigmoid'))
+classifier.add(Dense(1500, init='uniform', activation='sigmoid'))
+classifier.add(Dropout(0.30))
 
-classifier.add(LSTM(1500, activation='sigmoid'))
-classifier.add(Dropout(0.50))
+classifier.add(Dense(750))
+classifier.add(Dropout(0.30))
+
+classifier.add(Dense(325))
+classifier.add(Dropout(0.30))
 
 classifier.add(Dense(1, init='uniform', activation='sigmoid'))
-classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+classifier.compile(optimizer='Adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-classifier.fit(result2, targetInputFloat, epochs=7)  # 7 times.
+classifier.fit(result2, targetInputFloat, epochs=7, callbacks=[kerasboard])  # 7 times.
 prediction = classifier.predict(testResult2)
 
 prediction = (prediction > 0.5)
@@ -209,10 +219,12 @@ prediction = (prediction > 0.5)
 from sklearn.metrics import accuracy_score
 
 acScoreNN = accuracy_score(lb.fit_transform(testDataForComparison), prediction)
-print("Accuracy : "+str(acScoreNN))
+print("Accuracy : " + str(acScoreNN))
 
 probaNN = classifier.predict_proba(testResult2)
 print("NN AUC " + str(metrics.roc_auc_score(lb.fit_transform(testDataForComparison), probaNN)))
+
+print("tensorboard --logdir="+kerasboard.log_dir)
 
 
 # XGBoost
@@ -225,7 +237,6 @@ predictionXGBoost = classifierXG.predict(testResult2)
 acScoreXGBoost = accuracy_score(testDataForComparison, predictionXGBoost)
 print("Accuracy XGBoost: " + str(acScoreXGBoost))
 
-
 # Saving the best model with Pickle (Neural %82)
 import pickle
 pickle.dump(classifier, open("NeuralNews", 'wb'))
@@ -237,5 +248,4 @@ predictionPickleNeural = (predictionPickleNeural > 0.5)
 
 acScorePickleNeural = accuracy_score(lb.fit_transform(testDataForComparison), predictionPickleNeural)
 print("Accuracy Pickle Neural : " + str(acScorePickleNeural))
-
 
