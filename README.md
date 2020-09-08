@@ -4,4 +4,4 @@ Doğal Dil işleme (Natural Language Processing), basit hali ile yapay zeka ve d
 
 Bizimde amacımız buna benzer bir çalışma yapmaktır. Elimizde haber sitelerinin yazmış olduğu haber başlıkları ve bu başlıkların gerçek ya da sahte olduğunu gösteren bir veri kümesi bulunmaktadır. Derin öğrenme yöntemlerini kullanarak bu veri kümesini bilgisayara öğretecek ve gelecekte yazılmış bir haber başlığının gerçek mi yoksa sahte mi olduğunu anlamaya çalışacağız.
 
-Bunun için Google'ın geliştirmiş olduğu Colab ortamını kullanıyoruz. Bu ortamın avantajı derin öğrenme yöntemlerinde uygulamaları eğitirken TPU'ları kullanıyor olmasıdır. Google üreticilerine göre TPU'lar, GPU veya CPU'ya göre 15 kat daha hızlıdır. Bu da bizi büyük bir oranda zaman maliyetinden kurtarmaktadır.
+Bunun için Google'ın geliştirmiş olduğu Colab ortamını kullanıyoruz.
